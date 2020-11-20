@@ -3,36 +3,93 @@
     <h1 class="title-1">Calendar</h1>
     <div>
       <ul class="years">
-        <li class="year">{{ currentYear - 1 }}</li>
-        <li class="year">{{ currentYear }}</li>
-        <li class="year">{{ currentYear + 1 }}</li>
+        <li class="year" @click="yearState.funcPrevYear">{{ yearState.prevYear }}</li>
+        <li class="year">{{ yearState.currentYear }}</li>
+        <li class="year" @click="yearState.funcNextYear">{{ yearState.nextYear }}</li>
       </ul>
     </div>
     <div>
       <ul class="months">
-        <li class="month">{{ prevMonth }}</li>
-        <li class="month currentMonth">{{ currentMonth }}</li>
-        <li class="month">{{ nextMonth }}</li>
+        <li class="month" @click="monthState.prevMonth">{{ monthState.prevMonthStr }}</li>
+        <li class="month currentMonth">{{ monthState.currentMonthStr }}</li>
+        <li class="month" @click="monthState.nextMonth">{{ monthState.nextMonthStr }}</li>
       </ul>
     </div>
-    <Days></Days>
+    <Days :dates="totalDays" :startDay="start" :info="info" class="days"></Days>
   </div>
 </template>
 
 <script>
 import Days from "./Days";
+import { ref, reactive, computed } from 'vue'
+
+function dayInMonth(year, month){
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function startDay(year,month){
+  return new Date(year, month, 1).getDay();
+}
 
 export default {
   setup() {
-    const prevMonth = new Date(null,(new Date().getMonth() - 1)).toLocaleString('default', {month:"long"});
-    const currentMonth = new Date().toLocaleString('default', {month:"long"});
-    const nextMonth = new Date(null,(new Date().getMonth() + 1)).toLocaleString('default', {month:"long"});
-    const currentYear = new Date().getFullYear();
+    //using Reactive
+    let monthState = reactive({
+      currentMonth: new Date().getMonth(),
+      currentMonthStr: computed(() => new Date(null, monthState.currentMonth).toLocaleString('default', {month:"long"})),
+      nextMonthStr:  computed(() => new Date(null,(monthState.currentMonth + 1)).toLocaleString('default', {month:"long"})),
+      prevMonthStr:  computed(() => new Date(null,(monthState.currentMonth - 1)).toLocaleString('default', {month:"long"})),
+      prevMonth: () => {
+        if (monthState.currentMonth === 0){
+          monthState.currentMonth = 11;
+          yearState.currentYear--;
+        }
+        else
+          monthState.currentMonth--;
+      },
+      nextMonth: () => {
+        if (monthState.currentMonth === 11){
+          monthState.currentMonth = 0;
+          yearState.currentYear++;
+        }
+        else
+          monthState.currentMonth++;
+      }
+    });
+
+    let yearState = reactive({
+      currentYear: new Date().getFullYear(),
+      prevYear: computed(() =>yearState.currentYear - 1),
+      nextYear: computed(() => yearState.currentYear + 1),
+      funcPrevYear: () => yearState.currentYear--,
+      funcNextYear: () => yearState.currentYear++,
+    })
+
+    //Using Ref
+    // let currentMonth = ref(new Date().getMonth());
+    // let currentMonthStr = ref(computed(() => new Date(null, currentMonth.value).toLocaleString('default', {month:"long"})));
+    // let nextMonthStr = ref(computed(() => new Date(null,(currentMonth.value + 1)).toLocaleString('default', {month:"long"})));
+    // let prevMonthStr = ref(computed(() => new Date(null,(currentMonth.value - 1)).toLocaleString('default', {month:"long"})));
+    // const prevMonth =  () => currentMonth.value--;
+    // const nextMonth =  () => currentMonth.value++;
+
+    // const currentYear = new Date().getFullYear();
+
+    const totalDays = ref(computed(()=>dayInMonth(yearState.currentYear, monthState.currentMonth)));
+    const start = ref(computed(() =>startDay(yearState.currentYear, monthState.currentMonth)));
+    
     return {
-      currentMonth,
-      prevMonth,
-      nextMonth,
-      currentYear
+      // currentMonth,
+      // currentMonthStr,
+      // nextMonthStr,
+      // prevMonthStr,
+      // prevMonth,
+      // nextMonth,
+      // currentYear,
+      monthState,
+      yearState,
+      totalDays,
+      start,
     }
   },
   components: {
@@ -44,8 +101,9 @@ export default {
 <style scoped>
   .title-1{
     text-align: center;
-    font-size: 2.5em;
-    font-weight: 500;
+    font-size: 3em;
+    font-weight: 600;
+    text-transform: uppercase;
   }
   .months{
     display: flex;
@@ -53,6 +111,7 @@ export default {
     padding: 0;
     margin-bottom: 1.5rem;
     justify-content: center;
+    margin-top: -42rem;
   }
   .month{
     cursor: pointer;
@@ -60,7 +119,7 @@ export default {
     display: flex;
     justify-content: center;
     font-weight: 300;
-    font-size: 1.5em;
+    font-size: 2em;
     color: rgba(189, 186, 186, 0.726);
   }
   .currentMonth{
@@ -78,7 +137,12 @@ export default {
     text-orientation: sideways;
     z-index: -1;
   }
+  .years{
+    max-width: 100vw;
+    display: flex;
+  }
   .year {
+    cursor: pointer;
     font-weight: 700;
     font-size: 6em;
     height: 100%;
@@ -87,9 +151,8 @@ export default {
     margin: 0;
     margin-top: 0.8em;
     color: rgba(255, 255, 255, 0.295);
-    position: absolute;
-    overflow: hidden;
     display: flex;
+    flex-direction: column;
   }
   .year:nth-child(1){
     writing-mode: vertical-lr;
@@ -103,6 +166,6 @@ export default {
     padding:0;
     writing-mode: vertical-rl;
     text-orientation: upright;
-    margin-left: -3rem;
+    margin-right: 3rem;
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="calendar">
-    <h1 class="title-1">Calendar</h1>
+    <h1 class="title-1">Kalender</h1>
     <div>
       <ul class="years">
         <li class="year" @click="yearState.funcPrevYear">{{ yearState.prevYear }}</li>
@@ -21,7 +21,7 @@
 
 <script>
 import Days from "./Days";
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed} from 'vue'
 
 function dayInMonth(year, month){
   return new Date(year, month + 1, 0).getDate();
@@ -36,9 +36,9 @@ export default {
     //using Reactive
     let monthState = reactive({
       currentMonth: new Date().getMonth(),
-      currentMonthStr: computed(() => new Date(null, monthState.currentMonth).toLocaleString('default', {month:"long"})),
-      nextMonthStr:  computed(() => new Date(null,(monthState.currentMonth + 1)).toLocaleString('default', {month:"long"})),
-      prevMonthStr:  computed(() => new Date(null,(monthState.currentMonth - 1)).toLocaleString('default', {month:"long"})),
+      currentMonthStr: computed(() => new Date(null, monthState.currentMonth).toLocaleString('id-ID', {month:"long"})),
+      nextMonthStr:  computed(() => new Date(null,(monthState.currentMonth + 1)).toLocaleString('id-ID', {month:"long"})),
+      prevMonthStr:  computed(() => new Date(null,(monthState.currentMonth - 1)).toLocaleString('id-ID', {month:"long"})),
       prevMonth: () => {
         if (monthState.currentMonth === 0){
           monthState.currentMonth = 11;
@@ -77,6 +77,11 @@ export default {
 
     const totalDays = ref(computed(()=>dayInMonth(yearState.currentYear, monthState.currentMonth)));
     const start = ref(computed(() =>startDay(yearState.currentYear, monthState.currentMonth)));
+
+    const info = ref({
+      year: computed(()=>yearState.currentYear),
+      month: computed(()=>monthState.currentMonth)
+    })
     
     return {
       // currentMonth,
@@ -86,6 +91,7 @@ export default {
       // prevMonth,
       // nextMonth,
       // currentYear,
+      info,
       monthState,
       yearState,
       totalDays,
@@ -104,6 +110,7 @@ export default {
     font-size: 3em;
     font-weight: 600;
     text-transform: uppercase;
+    font-family: 'Quicksand', sans-serif;
   }
   .months{
     display: flex;
@@ -121,26 +128,19 @@ export default {
     font-weight: 300;
     font-size: 2em;
     color: rgba(189, 186, 186, 0.726);
+    -webkit-transition: all 0.2s;
+    transition: all 0.2s;
   }
   .currentMonth{
     font-weight: 500;
     color: rgb(255, 255, 255);
   }
-  .year:nth-child(2){
-    margin-top: 0em;
-    font-size: 20em;
-    color: rgba(255, 255, 255, 0.295);
-    z-index: 0;
-    display: flex;
-    justify-content: center;
-    writing-mode: unset;
-    text-orientation: sideways;
-    z-index: -1;
-  }
   .years{
     max-width: 100vw;
     display: flex;
+    margin-top: -1rem;
   }
+
   .year {
     cursor: pointer;
     font-weight: 700;
@@ -149,23 +149,106 @@ export default {
     width: 100%;
     padding: 0;
     margin: 0;
-    margin-top: 0.8em;
-    color: rgba(255, 255, 255, 0.295);
+    color: rgba(255, 255, 255, 0.507);
     display: flex;
     flex-direction: column;
+    transition: 0.3s ease-in;
   }
-  .year:nth-child(1){
-    writing-mode: vertical-lr;
-    text-orientation: upright;
-    padding: 0;
-    margin: 0;
-    margin-left: 3rem;
+  
+  @media(min-width: 1170px){
+    .year:nth-child(2){
+      margin-top: 0em;
+      font-size: 20em;
+      color: rgba(255, 255, 255, 0.144);
+      z-index: 0;
+      display: flex;
+      justify-content: center;
+      writing-mode: unset;
+      text-orientation: sideways;
+      z-index: -1;
+    }
+    .year:nth-child(1){
+      writing-mode: vertical-lr;
+      text-orientation: upright;
+      padding: 0;
+      margin: 0;
+      margin-left: 3rem;
+      transition: after 1s ease-in;
+      opacity: 1;
+    }
+    .year:nth-child(3){
+      margin: 0;
+      padding:0;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      margin-right: 3rem;
+      opacity: 1;
+    }
+    .year:nth-child(1)::after{
+      content:'<';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      margin-top: -10rem;
+      margin-left: -13rem;
+      width: 15vw;
+      background-color: rgb(54, 55, 56);
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+    .year:nth-child(3)::after{
+      content:'>';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      margin-top: -10rem;
+      margin-right: -13rem;
+      width: 15vw;
+      background-color: rgb(54, 55, 56);
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+    .year:hover:nth-child(1).year:nth-child(1):after, .year:hover:nth-child(3).year:nth-child(3):after{
+      opacity: 1;
+    }
+    .year:hover:nth-child(1), .year:hover:nth-child(3){
+      opacity: 0.85;
+    }
   }
-  .year:nth-child(3){
-    margin: 0;
-    padding:0;
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-    margin-right: 3rem;
+  @media(max-width: 1170px){
+    .year,.year:nth-child(1),.year:nth-child(3),.year:nth-child(3){
+      font-size: 2em !important; 
+      display: flex;
+      text-align: center;
+    }
+    .year:nth-child(2){
+      color:white;
+    }
+    .years{
+      display: flex;
+      justify-content: center;
+    }
+    .months{
+      margin: 0;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+  }
+  @media(max-width:900px){
+    .month{
+      font-size: 1.2em;
+      margin:0 3rem;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
+  }
+  @media(max-width:600px){
+    .month{
+      margin:0 1.5rem;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+    }
   }
 </style>

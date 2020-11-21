@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
 body{
-    background-color: rgb(4, 10, 29);
+    background-color: rgb(22, 23, 24);
     color: rgb(232, 233, 231);
     max-height: 100vh;
     overflow: hidden;
@@ -11,8 +11,18 @@ body{
 *{
     font-family: 'Poppins',sans-serif;
     font-weight: 300;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
 }
 ul{
     margin:0;
     padding: 0;
+}
+@media(max-width:590px){
+    body{
+        overflow-y: visible;
+    }
 }

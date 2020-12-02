@@ -1,0 +1,24 @@
+uid
+    user-email
+        name
+        chatID
+            message
+            timestamp
+
+
+*firestore
+personID
+    name ""
+    email ""
+    friendRequest []
+    contact []
+    photoURL
+
+
+*realtime database  
+roomID
+    messageID
+        messageText
+        receiverID
+        senderID
+        timestamp
